@@ -25,7 +25,6 @@ SOFTWARE.
 */
 
 
-#include "AppConfig.h"
 #include "rest_request.h"
 
 
