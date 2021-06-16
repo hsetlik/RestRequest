@@ -113,6 +113,10 @@ public:
     {
         return bodyAsString;
     }
+    void appendToUrl(String pName, String pValue)
+    {
+        url = url.withParameter(pName, pValue);
+    }
 
 private:
     URL url;

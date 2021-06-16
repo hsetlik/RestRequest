@@ -28,7 +28,7 @@ SOFTWARE.
 #include "rest_request.h"
 
 
-namespace adamski {
+namespace rest {
 
 
 }

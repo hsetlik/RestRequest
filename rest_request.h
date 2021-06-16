@@ -39,7 +39,7 @@ END_JUCE_MODULE_DECLARATION
 #pragma once
 #include "JuceHeader.h"
 
-namespace adamski {
+namespace rest {
 using namespace juce;
 
 #include "Source/RestRequest.h"
