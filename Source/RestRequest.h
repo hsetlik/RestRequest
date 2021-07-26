@@ -43,18 +43,63 @@ public:
             urlRequest = urlRequest.withPOSTData (output.toString());
         }
 
-        std::unique_ptr<InputStream> input (urlRequest.createInputStream (hasFields, nullptr, nullptr, stringPairArrayToHeaderString(headers), 0, &response.headers, &response.status, 5, verb));
-
+        auto input (urlRequest.createInputStream (hasFields, nullptr, nullptr, stringPairArrayToHeaderString(headers), 0, &response.headers, &response.status, 5, verb));
         response.result = checkInputStream (input);
-        if (response.result.failed()) return response;
-
+        if (response.result.failed())
+        {
+            printf ("Response failed!\n");
+            return response;
+        }
+        auto normalStreamLength = input->getTotalLength();
+        //printf("Normal Stream Length: %lld\n", normalStreamLength);
         response.bodyAsString = input->readEntireStreamAsString();
         response.result = JSON::parse(response.bodyAsString, response.body);
-
+        
+        
         return response;
     }
+    
+    RestRequest::Response executeAndDownload (juce::File& targetFile, juce::AudioBuffer<float>& targetBuffer)
+    {
+        auto urlRequest = url.getChildURL (endpoint);
+        bool hasFields = (fields.getProperties().size() > 0);
+        if (hasFields)
+        {
+            MemoryOutputStream output;
+            printf ("URL has fields\n");
+            fields.writeAsJSON (output, 0, false, 20);
+            urlRequest = urlRequest.withPOSTData (output.toString());
+        }
 
-
+        auto input = urlRequest.createInputStream (hasFields, nullptr, nullptr, stringPairArrayToHeaderString (headers), 0, &response.headers, &response.status, 5, verb);
+        response.result = checkInputStream (input);
+        if (response.result.failed())
+        {
+            printf ("Response failed!\n");
+            return response;
+        }
+        auto normalStreamLength = input->getTotalLength();
+        printf("Normal Stream Length: %lld\n", normalStreamLength);
+        response.bodyAsString = input->readEntireStreamAsString();
+        response.result = JSON::parse(response.bodyAsString, response.body);
+    
+        printf ("String Body is:\n %s\n", response.bodyAsString.toRawUTF8());
+        printf ("JSON body is:\n %s\n", response.body.toString().toRawUTF8());
+        
+        auto resourceUrl = urlRequest.getChildURL (response.bodyAsString);
+        auto stream = resourceUrl.createInputStream (true);
+        if (stream != nullptr)
+        {
+            printf ("Stream created\n");
+            juce::AudioFormatManager manager;
+            manager.registerBasicFormats();
+            auto reader = manager.createReaderFor (resourceUrl.createInputStream (true));
+            
+        }
+        
+        
+        return response;
+    }
     RestRequest get (const String& endpoint)
     {
         RestRequest req (*this);
