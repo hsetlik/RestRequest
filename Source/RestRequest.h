@@ -50,7 +50,7 @@ public:
             printf ("Response failed!\n");
             return response;
         }
-        auto normalStreamLength = input->getTotalLength();
+        //auto normalStreamLength = input->getTotalLength();
         //printf("Normal Stream Length: %lld\n", normalStreamLength);
         response.bodyAsString = input->readEntireStreamAsString();
         response.result = JSON::parse(response.bodyAsString, response.body);
@@ -93,7 +93,7 @@ public:
             printf ("Stream created\n");
             juce::AudioFormatManager manager;
             manager.registerBasicFormats();
-            auto reader = manager.createReaderFor (resourceUrl.createInputStream (true));
+            //auto reader = manager.createReaderFor (resourceUrl.createInputStream (true));
             
         }
         
